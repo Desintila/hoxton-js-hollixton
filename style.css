@@ -29,7 +29,7 @@ header ul{
     gap: 20px;
     
 }
-.tags{
+.navigation{
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 30px;
@@ -42,7 +42,7 @@ button{
     border: none;
     font-size:1.2rem;
 }
- .settings{
+ .menu-list{
     display: grid;
     grid-template-columns: repeat(3,30px);
     justify-content: end;
@@ -56,6 +56,10 @@ main{
     padding: 20px;
     margin-top: 1rem;
 }
+.discounted-price{
+    color: red;
+}
+
 footer{
     display: grid;
     place-items: center;
