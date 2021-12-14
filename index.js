@@ -1,15 +1,20 @@
 const state = {
     store: [],
-    category: ''
+    category: 'Home',
+    modal: '',
+    searchItem: ''
 }
-
 function renderHeader() {
     const headerEl = document.createElement('header')
     const divEl = document.createElement('div')
     divEl.setAttribute('class', 'navigation')
+    const linkEl = document.createElement('a')
+    linkEl.setAttribute('href', './index.html')
+    linkEl.setAttribute('class', 'link-to-homepage')
     const h1El = document.createElement('h1')
     h1El.setAttribute('class', 'logo')
     h1El.textContent = 'HOLLIXTON'
+    linkEl.append(h1El)
     const ulEl = document.createElement('ul')
     ulEl.setAttribute('class', 'tags-list')
     const liGirlTagEl = document.createElement('li')
@@ -41,7 +46,7 @@ function renderHeader() {
         render()
     })
     ulEl.append(liGirlTagEl, liGuysTagEl, liSaleTagEl)
-    divEl.append(h1El, ulEl)
+    divEl.append(linkEl, ulEl)
     const divSettingsEl = document.createElement('div')
     divSettingsEl.setAttribute('class', 'menu')
     const ulSettingsEl = document.createElement('ul')
@@ -49,6 +54,10 @@ function renderHeader() {
     const liSearchEl = document.createElement('li')
     const searchButtonEl = document.createElement('button')
     searchButtonEl.setAttribute('class', 'search-icon')
+    searchButtonEl.addEventListener('click', function () {
+        state.modal = 'Search'
+        render()
+    })
     const searchImg = document.createElement('img')
     searchImg.setAttribute('src', 'https://cdn-icons-png.flaticon.com/512/54/54481.png')
     searchButtonEl.append(searchImg)
@@ -76,6 +85,7 @@ function renderMain() {
     const mainEl = document.createElement('main')
     const h2El = document.createElement('h2')
     h2El.textContent = state.category
+    h2El.setAttribute('class', 'tag')
     const productSectionEl = document.createElement('section')
     productSectionEl.setAttribute('class', 'product-list')
     for (const product of showProducts()) {
@@ -132,6 +142,10 @@ function showProducts() {
     if (state.category === 'Sale') {
         productList = getSaleProducts()
     }
+
+    productList = productList.filter(function (product) {
+        return product.name.toLowerCase().includes(state.searchItem.toLowerCase())
+    })
     return productList
 }
 function getData() {
@@ -168,11 +182,45 @@ function getSaleProducts() {
         return product.discountedPrice
     })
 }
+function renderSearchModal() {
+    const sectionEl = document.createElement('section')
+    sectionEl.setAttribute('class', 'modal-section')
+    const modalEl = document.createElement('div')
+    modalEl.setAttribute('class', 'modal')
+    const closeButton = document.createElement('button')
+    closeButton.textContent = 'X'
+    closeButton.setAttribute('class', 'close-button')
+    closeButton.addEventListener('click', function () {
+        state.modal = ''
+        render()
+    })
+    const h3El = document.createElement('h3')
+    h3El.textContent = 'Search your product'
+    const formEl = document.createElement('form')
+    const inputEl = document.createElement('input')
+    inputEl.setAttribute('type', 'text')
+    inputEl.setAttribute('name', 'search-item')
+    formEl.append(inputEl)
+    formEl.addEventListener('submit', function (event) {
+        event.preventDefault()
+        state.searchItem = formEl['search-item'].value
+        render()
+    })
+    modalEl.append(closeButton, h3El, formEl)
+    sectionEl.append(modalEl)
+    document.body.append(sectionEl)
+}
+function renderModal() {
+    if (state.modal === 'Search') {
+        renderSearchModal()
+    }
+}
 function render() {
     document.body.innerHTML = ''
     renderHeader()
     renderMain()
     renderFooter()
+    renderModal()
 }
 render()
 console.log(state)
