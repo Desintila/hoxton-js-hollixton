@@ -2,7 +2,8 @@ const state = {
     store: [],
     category: 'Home',
     modal: '',
-    searchItem: ''
+    searchItem: '',
+    selectedItem: null
 }
 function renderHeader() {
     const headerEl = document.createElement('header')
@@ -13,6 +14,7 @@ function renderHeader() {
     h1El.textContent = 'HOLLIXTON'
     h1El.addEventListener('click', function () {
         state.category = 'Home'
+        state.selectedItem = null
         render()
     })
     const ulEl = document.createElement('ul')
@@ -25,6 +27,7 @@ function renderHeader() {
     girlButtonEl.addEventListener('click', function () {
         state.category = 'Girls'
         getGirlsProducts()
+        state.selectedItem = null
         render()
     })
     const liGuysTagEl = document.createElement('li')
@@ -34,6 +37,7 @@ function renderHeader() {
     liGuysTagEl.append(guysButtonEl)
     guysButtonEl.addEventListener('click', function () {
         state.category = 'Guys'
+        state.selectedItem = null
         render()
     })
     const liSaleTagEl = document.createElement('li')
@@ -43,6 +47,7 @@ function renderHeader() {
     liSaleTagEl.append(saleButtonEl)
     saleButtonEl.addEventListener('click', function () {
         state.category = 'Sale'
+        state.selectedItem = null
         render()
     })
     ulEl.append(liGirlTagEl, liGuysTagEl, liSaleTagEl)
@@ -56,6 +61,7 @@ function renderHeader() {
     searchButtonEl.setAttribute('class', 'search-icon')
     searchButtonEl.addEventListener('click', function () {
         state.modal = 'Search'
+        state.selectedItem = null
         render()
     })
     const searchImg = document.createElement('img')
@@ -83,56 +89,77 @@ function renderHeader() {
 }
 function renderMain() {
     const mainEl = document.createElement('main')
-    const h2El = document.createElement('h2')
-    h2El.textContent = state.category
-    h2El.setAttribute('class', 'tag')
-    mainEl.append(h2El)
-    if (state.searchItem !== '') {
-        const h2SearchEl = document.createElement('h2')
-        h2SearchEl.textContent = `Searched item:${state.searchItem}`
-        const xButtonEl = document.createElement('button')
-        xButtonEl.textContent = 'X'
-        xButtonEl.addEventListener('click', function () {
-            state.searchItem = ''
-            render()
-        })
-        mainEl.append(h2SearchEl, xButtonEl)
-    }
-    const productSectionEl = document.createElement('section')
-    productSectionEl.setAttribute('class', 'product-list')
-    for (const product of showProducts()) {
-        const productCardEl = document.createElement('div')
-        productCardEl.setAttribute('class', 'product-card')
-        const productLinkEl = document.createElement('a')
-        productLinkEl.setAttribute('href', '#')
-        const imgEl = document.createElement('img')
-        imgEl.setAttribute('src', product.image)
-        productLinkEl.append(imgEl)
-        const h3El = document.createElement('h3')
-        h3El.setAttribute('class', 'product-name')
-        h3El.textContent = product.name
-        const spanEl = document.createElement('span')
-        spanEl.setAttribute('class', 'price')
-        spanEl.textContent = `£${product.price}`
-        productCardEl.append(productLinkEl, h3El, spanEl)
-        if (product.discountedPrice) {
-            const discountPriceEl = document.createElement('span')
-            discountPriceEl.setAttribute('class', 'discounted-price')
-            spanEl.style['text-decoration'] = 'line-through'
-            discountPriceEl.textContent = ` £${product.discountedPrice}`
-            productCardEl.append(discountPriceEl)
+    if (state.selectedItem === null) {
+        const h2El = document.createElement('h2')
+        h2El.textContent = state.category
+        h2El.setAttribute('class', 'tag')
+        mainEl.append(h2El)
+        if (state.searchItem !== '') {
+            const h2SearchEl = document.createElement('h2')
+            h2SearchEl.textContent = `Searched item:${state.searchItem}`
+            const xButtonEl = document.createElement('button')
+            xButtonEl.textContent = 'X'
+            xButtonEl.addEventListener('click', function () {
+                state.searchItem = ''
+                render()
+            })
+            mainEl.append(h2SearchEl, xButtonEl)
         }
+        const productSectionEl = document.createElement('section')
+        productSectionEl.setAttribute('class', 'product-list')
+        for (const product of showProducts()) {
+            const productCardEl = document.createElement('div')
+            productCardEl.setAttribute('class', 'product-card')
+            productCardEl.addEventListener('click', function () {
+                state.selectedItem = product
+                render()
+            })
+            const productLinkEl = document.createElement('a')
+            productLinkEl.setAttribute('href', '#')
+            const imgEl = document.createElement('img')
+            imgEl.setAttribute('src', product.image)
+            productLinkEl.append(imgEl)
+            const h3El = document.createElement('h3')
+            h3El.setAttribute('class', 'product-name')
+            h3El.textContent = product.name
+            const spanEl = document.createElement('span')
+            spanEl.setAttribute('class', 'price')
+            spanEl.textContent = `£${product.price}`
+            productCardEl.append(productLinkEl, h3El, spanEl)
+            if (product.discountedPrice) {
+                const discountPriceEl = document.createElement('span')
+                discountPriceEl.setAttribute('class', 'discounted-price')
+                spanEl.style['text-decoration'] = 'line-through'
+                discountPriceEl.textContent = ` £${product.discountedPrice}`
+                productCardEl.append(discountPriceEl)
+            }
 
-        const checkProductDate = checkDate(product)
-        if (checkProductDate) {
-            const newProduct = document.createElement('span')
-            newProduct.textContent = 'New!'
-            newProduct.setAttribute('class', 'new-product')
-            productCardEl.append(newProduct)
+            const checkProductDate = checkDate(product)
+            if (checkProductDate) {
+                const newProduct = document.createElement('span')
+                newProduct.textContent = 'New!'
+                newProduct.setAttribute('class', 'new-product')
+                productCardEl.append(newProduct)
+            }
+            productSectionEl.append(productCardEl)
         }
-        productSectionEl.append(productCardEl)
+        mainEl.append(productSectionEl)
     }
-    mainEl.append(productSectionEl)
+    else {
+        const productDetailsSection = document.createElement('section')
+        productDetailsSection.setAttribute('class', 'details-section')
+        const productImg = document.createElement('img')
+        productImg.setAttribute('src', state.selectedItem.image)
+        const productDetails = document.createElement('div')
+        const productName = document.createElement('h2')
+        productName.textContent = state.selectedItem.name
+        const addToCartBtn = document.createElement('button')
+        addToCartBtn.textContent = 'ADD TO BAG'
+        addToCartBtn.setAttribute('class', 'add-to-cart')
+        productDetails.append(productName, addToCartBtn)
+        productDetailsSection.append(productImg, productDetails)
+        mainEl.append(productDetailsSection)
+    }
     document.body.append(mainEl)
 }
 function renderFooter() {
@@ -212,6 +239,7 @@ function renderSearchModal() {
     const inputEl = document.createElement('input')
     inputEl.setAttribute('type', 'text')
     inputEl.setAttribute('name', 'search-item')
+    inputEl.setAttribute('placeholder', 'Search...')
     formEl.append(inputEl)
     formEl.addEventListener('submit', function (event) {
         event.preventDefault()
