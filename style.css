@@ -51,10 +51,6 @@ header button{
     gap: 50px;
     margin-right: 1rem;
 }
-.link-to-homepage{
-    text-decoration: none;
-    color: black;
-}
 main{
     margin: 1rem 0.2rem;
     padding: 20px;

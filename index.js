@@ -8,13 +8,13 @@ function renderHeader() {
     const headerEl = document.createElement('header')
     const divEl = document.createElement('div')
     divEl.setAttribute('class', 'navigation')
-    const linkEl = document.createElement('a')
-    linkEl.setAttribute('href', './index.html')
-    linkEl.setAttribute('class', 'link-to-homepage')
     const h1El = document.createElement('h1')
     h1El.setAttribute('class', 'logo')
     h1El.textContent = 'HOLLIXTON'
-    linkEl.append(h1El)
+    h1El.addEventListener('click', function () {
+        state.category = 'Home'
+        render()
+    })
     const ulEl = document.createElement('ul')
     ulEl.setAttribute('class', 'tags-list')
     const liGirlTagEl = document.createElement('li')
@@ -46,7 +46,7 @@ function renderHeader() {
         render()
     })
     ulEl.append(liGirlTagEl, liGuysTagEl, liSaleTagEl)
-    divEl.append(linkEl, ulEl)
+    divEl.append(h1El, ulEl)
     const divSettingsEl = document.createElement('div')
     divSettingsEl.setAttribute('class', 'menu')
     const ulSettingsEl = document.createElement('ul')
@@ -86,6 +86,18 @@ function renderMain() {
     const h2El = document.createElement('h2')
     h2El.textContent = state.category
     h2El.setAttribute('class', 'tag')
+    mainEl.append(h2El)
+    if (state.searchItem !== '') {
+        const h2SearchEl = document.createElement('h2')
+        h2SearchEl.textContent = `Searched item:${state.searchItem}`
+        const xButtonEl = document.createElement('button')
+        xButtonEl.textContent = 'X'
+        xButtonEl.addEventListener('click', function () {
+            state.searchItem = ''
+            render()
+        })
+        mainEl.append(h2SearchEl, xButtonEl)
+    }
     const productSectionEl = document.createElement('section')
     productSectionEl.setAttribute('class', 'product-list')
     for (const product of showProducts()) {
@@ -120,7 +132,7 @@ function renderMain() {
         }
         productSectionEl.append(productCardEl)
     }
-    mainEl.append(h2El, productSectionEl)
+    mainEl.append(productSectionEl)
     document.body.append(mainEl)
 }
 function renderFooter() {
